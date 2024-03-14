@@ -4,15 +4,19 @@ import com.udacity.jwdnd.course1.cloudstorage.mapper.NoteMapper;
 import com.udacity.jwdnd.course1.cloudstorage.model.Note;
 import com.udacity.jwdnd.course1.cloudstorage.model.NoteForm;
 import com.udacity.jwdnd.course1.cloudstorage.model.User;
-import lombok.AllArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@AllArgsConstructor
+
 public class NoteService {
     private NoteMapper noteMapper;
+
+    public NoteService(NoteMapper noteMapper) {
+        this.noteMapper = noteMapper;
+    }
 
     public List<Note> getNotes(String userId) {
         return noteMapper.getNotes(userId);
