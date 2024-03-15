@@ -7,7 +7,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
-//https://spring.io/blog/2022/02/21/spring-security-without-the-websecurityconfigureradapter
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -27,16 +26,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/signup", "/css/**", "/js/**").permitAll()
-                .anyRequest().authenticated()
-                        .and()
+                .anyRequest().authenticated();
 
-        .formLogin()
+
+        http.formLogin()
                 .loginPage("/login")
-                .permitAll()
-                        .and()
+                .permitAll();
 
-        .formLogin()
-                .defaultSuccessUrl("/home", true);
+
+        http.formLogin()
+                .defaultSuccessUrl("/home", true)
+                .and()
+
+                .logout()
+                .permitAll();
+
     }
 
 
