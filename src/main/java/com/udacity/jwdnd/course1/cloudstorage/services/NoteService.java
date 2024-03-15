@@ -15,12 +15,11 @@ import java.util.List;
 
 public class NoteService {
     private NoteMapper noteMapper;
-    private UserMapper userMapper;
 
 
-    public NoteService(NoteMapper noteMapper, UserMapper userMapper) {
+
+    public NoteService(NoteMapper noteMapper) {
         this.noteMapper = noteMapper;
-        this.userMapper = userMapper;
     }
 
 
