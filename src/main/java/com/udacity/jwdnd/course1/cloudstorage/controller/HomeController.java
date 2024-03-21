@@ -1,12 +1,7 @@
 package com.udacity.jwdnd.course1.cloudstorage.controller;
 
-import com.udacity.jwdnd.course1.cloudstorage.model.File;
-import com.udacity.jwdnd.course1.cloudstorage.model.Note;
-import com.udacity.jwdnd.course1.cloudstorage.model.NoteForm;
-import com.udacity.jwdnd.course1.cloudstorage.model.User;
-import com.udacity.jwdnd.course1.cloudstorage.services.FileService;
-import com.udacity.jwdnd.course1.cloudstorage.services.NoteService;
-import com.udacity.jwdnd.course1.cloudstorage.services.UserService;
+import com.udacity.jwdnd.course1.cloudstorage.model.*;
+import com.udacity.jwdnd.course1.cloudstorage.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -16,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,13 +26,18 @@ public class HomeController {
     UserService userService;
     @Autowired
     FileService fileService;
+    @Autowired
+    CredentialService credentialService;
+
 
     @GetMapping()
-    public String homeView(NoteForm noteForm, Authentication auth, Model model) {
+    public String homeView(NoteForm noteForm, CredentialForm credentialForm, Authentication auth, Model model) {
         User user = userService.getUser(auth.getName());
 
         model.addAttribute("notes", this.noteService.getNotes(user.getUserId()));
         model.addAttribute("files", this.fileService.getFiles(user.getUserId()));
+        model.addAttribute("credentials", this.credentialService.getCredentials(user.getUserId()));
+        model.addAttribute("credentialService", credentialService);
         return "home";
     }
 //  FILES
@@ -58,7 +57,7 @@ public class HomeController {
     }
 
     @GetMapping("/file/download")
-    public ResponseEntity<Resource> downloadFile(@RequestParam("id") String fileId, Authentication auth, Model model) {
+    public ResponseEntity<Resource> downloadFile(@RequestParam("id") String fileId, Authentication auth) {
         User user = userService.getUser(auth.getName());
 
         File result = fileService.downloadFile(user, fileId);
@@ -128,5 +127,50 @@ public class HomeController {
         }
         return "result";
     }
+
+
+// CREDENTIALS
+    @PostMapping("/credential/addoredit")
+    public String addCredential(Authentication auth, CredentialForm credentialForm, Model model) {
+        User user = userService.getUser(auth.getName());
+
+        if (Objects.equals(credentialForm.getCredId(), "")) {
+            int result = credentialService.addCredential(credentialForm, user);
+
+            if (result == 1) {
+                model.addAttribute("success", true);
+                model.addAttribute("successMessage", "Credential successfully saved!");
+            } else {
+                model.addAttribute("success", false);
+                model.addAttribute("errorMessage", "Your credential could not be saved.Try again.");
+            }
+        } else {
+            int result = credentialService.updateCredential(credentialForm, user);
+            if (result == 1) {
+                model.addAttribute("success", true);
+                model.addAttribute("successMessage", "Changes successfully saved!");
+            } else {
+                model.addAttribute("success", false);
+                model.addAttribute("errorMessage", "Your changes could not be saved.Try again.");
+            }
+        }
+        return("result");
+    }
+
+    @GetMapping("/credential/delete")
+    public String deleteCredential(@RequestParam("id") String credId, Model model) {
+
+        int result = credentialService.deleteCredential(credId);
+
+        if (result == 1) {
+            model.addAttribute("success", true);
+            model.addAttribute("successMessage", "Credential successfully deleted!");
+        } else {
+            model.addAttribute("success", false);
+            model.addAttribute("errorMessage", "Your credential could not be deleted. Try again.");
+        }
+        return "result";
+    }
+
 }
 

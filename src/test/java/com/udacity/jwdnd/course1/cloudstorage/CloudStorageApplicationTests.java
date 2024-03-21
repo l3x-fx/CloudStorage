@@ -7,6 +7,7 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -44,11 +45,7 @@ class CloudStorageApplicationTests {
 		Assertions.assertEquals("Login", driver.getTitle());
 	}
 
-	/**
-	 * PLEASE DO NOT DELETE THIS method.
-	 * Helper method for Udacity-supplied sanity checks.
-	 **/
-	private void doMockSignUp(String firstName, String lastName, String userName, String password){
+	private void doMockSignUp(String firstName, String lastName, String userName, String password) throws InterruptedException {
 		// Create a dummy account for logging in later.
 
 		// Visit the sign-up page.
@@ -62,20 +59,28 @@ class CloudStorageApplicationTests {
 		inputFirstName.click();
 		inputFirstName.sendKeys(firstName);
 
+		Thread.sleep(600);
+
 		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("inputLastName")));
 		WebElement inputLastName = driver.findElement(By.id("inputLastName"));
 		inputLastName.click();
 		inputLastName.sendKeys(lastName);
+
+		Thread.sleep(600);
 
 		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("inputUsername")));
 		WebElement inputUsername = driver.findElement(By.id("inputUsername"));
 		inputUsername.click();
 		inputUsername.sendKeys(userName);
 
+		Thread.sleep(600);
+
 		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("inputPassword")));
 		WebElement inputPassword = driver.findElement(By.id("inputPassword"));
 		inputPassword.click();
 		inputPassword.sendKeys(password);
+
+		Thread.sleep(600);
 
 		// Attempt to sign up.
 		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("buttonSignUp")));
@@ -86,17 +91,15 @@ class CloudStorageApplicationTests {
 		// You may have to modify the element "success-msg" and the sign-up 
 		// success message below depening on the rest of your code.
 		*/
-		Assertions.assertTrue(driver.findElement(By.id("success-msg")).getText().contains("You successfully signed up!"));
+
+		Thread.sleep(600);
+
+		Assertions.assertTrue(driver.findElement(By.id("successMsg")).getText().contains("Registered successfully! Log in to continue."));
+
+		Thread.sleep(600);
 	}
 
-	
-	
-	/**
-	 * PLEASE DO NOT DELETE THIS method.
-	 * Helper method for Udacity-supplied sanity checks.
-	 **/
-	private void doLogIn(String userName, String password)
-	{
+	private void doLogIn(String userName, String password) throws InterruptedException {
 		// Log in to our dummy account.
 		driver.get("http://localhost:" + this.port + "/login");
 		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
@@ -111,27 +114,16 @@ class CloudStorageApplicationTests {
 		loginPassword.click();
 		loginPassword.sendKeys(password);
 
-		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("login-button")));
-		WebElement loginButton = driver.findElement(By.id("login-button"));
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("submitButton")));
+		WebElement loginButton = driver.findElement(By.id("submitButton"));
 		loginButton.click();
-
+		Thread.sleep(600);
 		webDriverWait.until(ExpectedConditions.titleContains("Home"));
-
+		Thread.sleep(600);
 	}
 
-	/**
-	 * PLEASE DO NOT DELETE THIS TEST. You may modify this test to work with the 
-	 * rest of your code. 
-	 * This test is provided by Udacity to perform some basic sanity testing of 
-	 * your code to ensure that it meets certain rubric criteria. 
-	 * 
-	 * If this test is failing, please ensure that you are handling redirecting users 
-	 * back to the login page after a succesful sign up.
-	 * Read more about the requirement in the rubric: 
-	 * https://review.udacity.com/#!/rubrics/2724/view 
-	 */
 	@Test
-	public void testRedirection() {
+	public void testRedirection() throws InterruptedException {
 		// Create a test account
 		doMockSignUp("Redirection","Test","RT","123");
 		
@@ -139,44 +131,20 @@ class CloudStorageApplicationTests {
 		Assertions.assertEquals("http://localhost:" + this.port + "/login", driver.getCurrentUrl());
 	}
 
-	/**
-	 * PLEASE DO NOT DELETE THIS TEST. You may modify this test to work with the 
-	 * rest of your code. 
-	 * This test is provided by Udacity to perform some basic sanity testing of 
-	 * your code to ensure that it meets certain rubric criteria. 
-	 * 
-	 * If this test is failing, please ensure that you are handling bad URLs 
-	 * gracefully, for example with a custom error page.
-	 * 
-	 * Read more about custom error pages at: 
-	 * https://attacomsian.com/blog/spring-boot-custom-error-page#displaying-custom-error-page
-	 */
 	@Test
-	public void testBadUrl() {
+	public void testBadUrl() throws InterruptedException {
 		// Create a test account
 		doMockSignUp("URL","Test","UT","123");
 		doLogIn("UT", "123");
 		
 		// Try to access a random made-up URL.
 		driver.get("http://localhost:" + this.port + "/some-random-page");
+		Thread.sleep(200);
 		Assertions.assertFalse(driver.getPageSource().contains("Whitelabel Error Page"));
 	}
 
-
-	/**
-	 * PLEASE DO NOT DELETE THIS TEST. You may modify this test to work with the 
-	 * rest of your code. 
-	 * This test is provided by Udacity to perform some basic sanity testing of 
-	 * your code to ensure that it meets certain rubric criteria. 
-	 * 
-	 * If this test is failing, please ensure that you are handling uploading large files (>1MB),
-	 * gracefully in your code. 
-	 * 
-	 * Read more about file size limits here: 
-	 * https://spring.io/guides/gs/uploading-files/ under the "Tuning File Upload Limits" section.
-	 */
 	@Test
-	public void testLargeUpload() {
+	public void testLargeUpload() throws InterruptedException {
 		// Create a test account
 		doMockSignUp("Large File","Test","LFT","123");
 		doLogIn("LFT", "123");
@@ -199,7 +167,14 @@ class CloudStorageApplicationTests {
 		Assertions.assertFalse(driver.getPageSource().contains("HTTP Status 403 – Forbidden"));
 
 	}
+//	SIGNUP AND LOVING FLOW
+	@Test
+	public void testUnauthorizedHomeAccess() throws InterruptedException {
 
+	}
+	@Test
+	public void testHomeAccessAfterLogout() throws InterruptedException {
 
+	}
 
 }

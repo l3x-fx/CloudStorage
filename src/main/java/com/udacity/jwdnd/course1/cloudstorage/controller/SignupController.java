@@ -9,20 +9,24 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/signup")
 public class SignupController {
     @Autowired
     private UserService userService;
-
+    @Autowired
+    private HttpSession httpSession;
     @GetMapping()
     public String signupView() {
         return "signup";
     }
 
     @PostMapping()
-    public String signupUser(@ModelAttribute User user, Model model) {
+    public String signupUser(@ModelAttribute User user, Model model, RedirectAttributes redirectAttributes) {
         String signupError = null;
 
         if(!userService.isUsernameAvailable(user.getUsername())){
@@ -35,14 +39,12 @@ public class SignupController {
                 signupError = "There was an error signing you up. Please try again.";
             }
         }
+
         if (signupError == null) {
-            model.addAttribute("signupSuccess", true);
+            httpSession.setAttribute("signupSuccess", true);
+            return "redirect:/login";
         } else {
             model.addAttribute("signupError", signupError);
-        }
-        if(signupError==null) {
-            return "login";
-        } else {
             return "signup";
         }
     }
