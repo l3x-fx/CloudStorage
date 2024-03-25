@@ -1,13 +1,11 @@
 package com.udacity.jwdnd.course1.cloudstorage.services;
 
 import com.udacity.jwdnd.course1.cloudstorage.mapper.FileMapper;
-import com.udacity.jwdnd.course1.cloudstorage.mapper.UserMapper;
 import com.udacity.jwdnd.course1.cloudstorage.model.File;
 import com.udacity.jwdnd.course1.cloudstorage.model.User;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-
 
 import java.io.IOException;
 import java.util.List;
@@ -26,8 +24,8 @@ public class FileService {
 
     public int uploadFile (MultipartFile file, User user) throws IOException {
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-        File FileToUpload = new File(null, fileName, fileName.substring(fileName.lastIndexOf(".")+1), file.getSize(), user.getUserId(), file.getBytes());
-           return fileMapper.uploadFile(FileToUpload);
+        File fileToUpload = new File(null, fileName, fileName.substring(fileName.lastIndexOf(".")+1), file.getSize(), user.getUserId(), file.getBytes());
+           return fileMapper.uploadFile(fileToUpload);
     }
 
     public File downloadFile(User user, String fileId) {
