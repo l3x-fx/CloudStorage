@@ -25,9 +25,11 @@ public class FileService {
     public int uploadFile (MultipartFile file, User user) throws IOException {
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
         File fileToUpload = new File(null, fileName, fileName.substring(fileName.lastIndexOf(".")+1), file.getSize(), user.getUserId(), file.getBytes());
-           return fileMapper.uploadFile(fileToUpload);
+        return fileMapper.uploadFile(fileToUpload);
     }
-
+    public boolean fileExists(String userId, String filename) {
+        return fileMapper.getFileByFilename(userId, filename) != null;
+    }
     public File downloadFile(User user, String fileId) {
         return fileMapper.getFileById(user.getUserId(), fileId);
     }

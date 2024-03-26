@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Controller
@@ -53,8 +55,14 @@ public class HomeController {
     @PostMapping("/file/upload")
     public String uploadFile(@RequestParam("fileUpload") MultipartFile uploadFile, Model model, Authentication auth) throws IOException {
         User user = userService.getUser(auth.getName());
+        if(fileService.fileExists(user.getUserId(), uploadFile.getOriginalFilename())){
+            model.addAttribute("success", false);
+            model.addAttribute("errorMessage", "Your file already exists.");
+            return "result";
+        }
 
         int result = fileService.uploadFile(uploadFile, user);
+
         if (result == 1) {
             model.addAttribute("success", true);
             model.addAttribute("successMessage", "File successfully saved!");
